@@ -10,6 +10,9 @@ a plain-language clinical report card.
 
 Built for the hackathon per `hackathon_master_plan_v2.md`.
 
+**Presentation:** [`Hack4hackathon_presentation.pptx`](Hack4hackathon_presentation.pptx) (17 slides).
+**Live demo:** run locally (below) or deploy to Streamlit Cloud (see Deploy section).
+
 ## The core idea
 
 Three datasets, **zero shared participants** (RAVDESS speech, FER2013 faces, a
