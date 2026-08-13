@@ -118,7 +118,16 @@ def train(cfg):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", required=True)
+    ap.add_argument("--epochs", type=int, default=None)
+    ap.add_argument("--run-id", default=None)
+    ap.add_argument("--workers", type=int, default=None)
     a = ap.parse_args()
     with open(a.config) as f:
         cfg = yaml.safe_load(f)
+    if a.epochs is not None:
+        cfg["epochs"] = a.epochs
+    if a.run_id is not None:
+        cfg["run_id"] = a.run_id
+    if a.workers is not None:
+        cfg["workers"] = a.workers
     train(cfg)
