@@ -1,0 +1,7 @@
+run_id: concat_random
+pairing: random
+ordinal: false
+modality_dropout: 0.0
+augment: true
+epochs: 30
+lambda_reg: 0.5

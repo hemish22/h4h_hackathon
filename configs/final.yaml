@@ -1,0 +1,15 @@
+run_id: final_matched
+pairing: matched
+ordinal: true
+beta: 0.3
+modality_dropout: 0.15
+aux_w: 0.3
+class_weight: true
+asym: 1.5
+augment: true
+epochs: 30
+patience: 7
+lr: 0.0003
+batch: 64
+lambda_reg: 0.5
+seed: 42

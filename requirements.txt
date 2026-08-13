@@ -1,0 +1,17 @@
+numpy
+pandas
+scipy
+scikit-learn
+torch
+librosa
+soundfile
+scikit-image
+Pillow
+lightgbm
+shap
+matplotlib
+seaborn
+streamlit
+pyyaml
+joblib
+tabulate

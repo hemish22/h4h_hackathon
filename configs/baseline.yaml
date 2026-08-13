@@ -1,0 +1,1 @@
+# Tabular-only baseline is run via `python -m src.baseline` (LightGBM). No YAML needed.

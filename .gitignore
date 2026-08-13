@@ -1,0 +1,25 @@
+# dataset is huge (28k images + 1440 wavs) — not committed. See README for setup.
+dataset/
+
+# generated artifacts
+artifacts/*.pt
+artifacts/*.joblib
+data/*.csv
+results/
+figures/*.png
+splits/*.txt
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
+
+# keep dir placeholders
+!data/.gitkeep
+!splits/.gitkeep
+!figures/.gitkeep
+!results/.gitkeep
+!artifacts/.gitkeep

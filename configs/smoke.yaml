@@ -1,0 +1,9 @@
+run_id: smoke
+pairing: matched
+dummy: true
+ordinal: true
+modality_dropout: 0.15
+augment: false
+epochs: 2
+batch: 32
+workers: 0
