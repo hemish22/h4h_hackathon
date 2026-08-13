@@ -52,7 +52,7 @@ def _gradcam(model, batch, modality, target_layer):
     A = acts["v"][0]; G = grads["v"][0]                 # (Cc,h,w)
     w = G.mean(dim=(1, 2))
     cam = torch.relu((w[:, None, None] * A).sum(0)).detach().cpu().numpy()
-    cam = (cam - cam.min()) / (cam.ptp() + 1e-8)
+    cam = (cam - cam.min()) / (np.ptp(cam) + 1e-8)
     return cam, pred
 
 

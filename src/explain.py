@@ -123,5 +123,5 @@ def grad_cam(model_conv, x, target_layer, device="cpu"):
     h1.remove(); h2.remove()
     w = grads["v"].mean(dim=(2, 3), keepdim=True)
     cam = torch.relu((w * acts["v"]).sum(1)).squeeze().cpu().numpy()
-    cam = (cam - cam.min()) / (cam.ptp() + 1e-8)
+    cam = (cam - cam.min()) / (np.ptp(cam) + 1e-8)
     return cam
