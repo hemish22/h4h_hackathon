@@ -72,6 +72,20 @@ def apply_theme():
             border: 1px dashed var(--slate);
             border-radius: 12px;
         }}
+        /* the uploader's internal Upload/Browse button was dark-on-dark */
+        [data-testid="stFileUploaderDropzone"] button {{
+            background: var(--white) !important;
+            color: var(--ink) !important;
+            border: 1px solid var(--slate) !important;
+            font-weight: 600;
+        }}
+        [data-testid="stFileUploaderDropzone"] button:hover {{
+            background: var(--yellow) !important;
+            color: var(--ink) !important;
+            border-color: var(--ink) !important;
+        }}
+        [data-testid="stFileUploaderDropzone"] button * {{ color: var(--ink) !important; }}
+        [data-testid="stFileUploaderDropzone"] svg {{ fill: var(--ink) !important; }}
         [data-testid="stExpander"] {{
             border: 1px solid rgba(57,62,70,.22);
             border-radius: 12px;
