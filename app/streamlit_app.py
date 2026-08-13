@@ -684,6 +684,15 @@ if "demo" in st.session_state and (go is False):
     tv = scaler.transform(np.array([[d["features"][f] for f in C.FEATURE_COLS]]))[0]
     st.info(f"**{d['tag']}** — participant #{d['participant_id']} "
             f"(true: {d['true_class'].replace('_',' ')})")
+    # show the actual inputs used for this demo
+    ic, ac = st.columns([1, 2])
+    with ic:
+        st.caption("Face input")
+        st.image(D.resolve(d["image_path"]), width=160)
+    with ac:
+        st.caption("Voice input")
+        with open(D.resolve(d["audio_path"]), "rb") as _f:
+            st.audio(_f.read(), format="audio/wav")
     proba, pstd, reg, rstd, gate, aux = infer(model, face, mel, tv, False, False)
     render(proba, pstd, reg, rstd, gate, aux, [], conflict_hint=d["conflict"],
            source_label=f"Demo · {d['tag']}")
