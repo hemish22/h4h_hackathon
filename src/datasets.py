@@ -115,11 +115,19 @@ class MultimodalDataset(Dataset):
         return len(self.df)
 
     def _get_mel(self, path):
-        if self._mel_cache is not None and not self.augment and path in self._mel_cache:
-            return self._mel_cache[path]
-        mel = load_logmel(path, augment=self.augment)
-        if self._mel_cache is not None and not self.augment:
-            self._mel_cache[path] = mel
+        # Cache the BASE (un-augmented) log-mel once per unique clip, so librosa
+        # decodes each file only once across all epochs. Augmentation is applied
+        # as cheap SpecAugment on the cached copy each call — big speedup.
+        # (Needs persistent_workers=True when num_workers>0, else per-worker
+        #  caches are discarded between epochs.)
+        if self._mel_cache is not None and path in self._mel_cache:
+            mel = self._mel_cache[path]
+        else:
+            mel = load_logmel(path, augment=False)
+            if self._mel_cache is not None:
+                self._mel_cache[path] = mel
+        if self.augment:
+            mel = _spec_augment(mel.copy())
         return mel
 
     def __getitem__(self, i):

@@ -66,8 +66,10 @@ def train(cfg):
     tr = MultimodalDataset(manifest, "train", augment=cfg.get("augment", True))
     va = MultimodalDataset(manifest, "val")
     bs = cfg.get("batch", 64)
-    dl_tr = DataLoader(tr, batch_size=bs, shuffle=True, num_workers=cfg.get("workers", 2))
-    dl_va = DataLoader(va, batch_size=bs, num_workers=cfg.get("workers", 2))
+    nw = cfg.get("workers", 2)
+    pw = nw > 0                       # persist workers so mel cache survives epochs
+    dl_tr = DataLoader(tr, batch_size=bs, shuffle=True, num_workers=nw, persistent_workers=pw)
+    dl_va = DataLoader(va, batch_size=bs, num_workers=nw, persistent_workers=pw)
 
     model = build_model(dummy=cfg.get("dummy", False),
                         modality_dropout=cfg.get("modality_dropout", 0.15)).to(device)
