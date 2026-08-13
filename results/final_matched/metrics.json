@@ -1,0 +1,92 @@
+{
+  "classification": {
+    "accuracy": 0.67,
+    "precision_per_class": {
+      "Healthy": 0.6818181818181818,
+      "Mild_Stress": 0.7345132743362832,
+      "Moderate_Stress": 0.6363636363636364,
+      "Severe_Stress": 0.35714285714285715
+    },
+    "recall_per_class": {
+      "Healthy": 0.7959183673469388,
+      "Mild_Stress": 0.4486486486486487,
+      "Moderate_Stress": 0.7880794701986755,
+      "Severe_Stress": 0.2631578947368421
+    },
+    "f1_per_class": {
+      "Healthy": 0.7344632768361582,
+      "Mild_Stress": 0.5570469798657718,
+      "Moderate_Stress": 0.7041420118343196,
+      "Severe_Stress": 0.30303030303030304
+    },
+    "support_per_class": {
+      "Healthy": 245,
+      "Mild_Stress": 185,
+      "Moderate_Stress": 151,
+      "Severe_Stress": 19
+    },
+    "macro_f1": 0.5746706428916382,
+    "weighted_f1": 0.6584670227409742,
+    "confusion_matrix": [
+      [
+        195,
+        17,
+        33,
+        0
+      ],
+      [
+        66,
+        83,
+        33,
+        3
+      ],
+      [
+        17,
+        9,
+        119,
+        6
+      ],
+      [
+        8,
+        4,
+        2,
+        5
+      ]
+    ],
+    "qwk_EXTRA": 0.5616284877363966,
+    "roc_auc_ovr_macro": 0.864143810739186,
+    "roc_auc_ovr_weighted": 0.8514945741928606,
+    "report": "                 precision    recall  f1-score   support\n\n        Healthy       0.68      0.80      0.73       245\n    Mild_Stress       0.73      0.45      0.56       185\nModerate_Stress       0.64      0.79      0.70       151\n  Severe_Stress       0.36      0.26      0.30        19\n\n       accuracy                           0.67       600\n      macro avg       0.60      0.57      0.57       600\n   weighted avg       0.68      0.67      0.66       600\n"
+  },
+  "regression": {
+    "Depression": {
+      "MAE": 7.708496825688829,
+      "MSE": 91.69168780748868,
+      "RMSE": 9.57557767487104,
+      "R2": 0.0669908637280262,
+      "ExplainedVariance": 0.07416190259003863,
+      "NRMSE_pct_EXTRA": 28.163463749620707
+    },
+    "Anxiety": {
+      "MAE": 6.089876225143671,
+      "MSE": 51.243183351785255,
+      "RMSE": 7.15843442044315,
+      "R2": 0.03710559515203926,
+      "ExplainedVariance": 0.056997216274130014,
+      "NRMSE_pct_EXTRA": 29.82681008517979
+    },
+    "Stress": {
+      "MAE": 8.951404860839247,
+      "MSE": 118.17873349440234,
+      "RMSE": 10.871004254180123,
+      "R2": 0.07670749894022633,
+      "ExplainedVariance": 0.08337953166344436,
+      "NRMSE_pct_EXTRA": 27.874369882513136
+    }
+  },
+  "mean_gate": [
+    0.4013480246067047,
+    0.41473740339279175,
+    0.18391448259353638
+  ]
+}
