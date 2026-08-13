@@ -7,6 +7,22 @@ import pandas as pd
 from . import config as C
 
 
+def rel(path: str) -> str:
+    """Path relative to project ROOT — makes manifests portable across machines."""
+    ap = os.path.abspath(path)
+    try:
+        return os.path.relpath(ap, C.ROOT)
+    except ValueError:
+        return ap
+
+
+def resolve(path: str) -> str:
+    """Resolve a (possibly relative-to-ROOT) path to an absolute path for I/O."""
+    if os.path.isabs(path):
+        return path
+    return os.path.join(C.ROOT, path)
+
+
 def parse_filename(name: str) -> dict:
     """03-01-06-01-02-01-12.wav -> structured metadata.
 
@@ -35,7 +51,7 @@ def list_audio_files() -> pd.DataFrame:
             continue
         for wav in sorted(glob.glob(os.path.join(actor_dir, "*.wav"))):
             meta = parse_filename(wav)
-            meta["path"] = wav
+            meta["path"] = rel(wav)
             meta["stress"] = C.AUDIO_EMO_TO_STRESS[meta["emotion"]]
             rows.append(meta)
     df = pd.DataFrame(rows)
@@ -51,7 +67,7 @@ def list_image_files() -> pd.DataFrame:
             continue
         for img in sorted(glob.glob(os.path.join(d, "*"))):
             if img.lower().endswith((".jpg", ".jpeg", ".png")):
-                rows.append(dict(path=img, emotion=emo,
+                rows.append(dict(path=rel(img), emotion=emo,
                                  stress=C.IMAGE_EMO_TO_STRESS[emo]))
     return pd.DataFrame(rows)
 

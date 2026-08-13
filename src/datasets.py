@@ -21,7 +21,8 @@ IMG_SIZE = 48
 # ------------------------------------------------------------------ preprocessing
 def load_logmel(path, sr=16000, dur=3.0, augment=False):
     import librosa
-    y, _ = librosa.load(path, sr=sr, mono=True)
+    from .data_utils import resolve
+    y, _ = librosa.load(resolve(path), sr=sr, mono=True)
     y, _ = librosa.effects.trim(y, top_db=30)
     n = int(sr * dur)
     if len(y) < n:
@@ -69,7 +70,8 @@ def _spec_augment(mel, F=16, T=24, nf=2, nt=2):
 
 def load_face(path, augment=False):
     from PIL import Image
-    arr = np.asarray(Image.open(path).convert("L").resize((IMG_SIZE, IMG_SIZE)),
+    from .data_utils import resolve
+    arr = np.asarray(Image.open(resolve(path)).convert("L").resize((IMG_SIZE, IMG_SIZE)),
                      dtype=np.float32) / 255.0
     arr = (arr - 0.5) / 0.5
     if augment:

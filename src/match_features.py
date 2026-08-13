@@ -20,7 +20,7 @@ from . import data_utils as D
 # ------------------------------------------------------------------ audio
 def audio_match_features(path: str) -> dict:
     import librosa
-    y, sr = librosa.load(path, sr=16000, mono=True)
+    y, sr = librosa.load(D.resolve(path), sr=16000, mono=True)
     y, _ = librosa.effects.trim(y, top_db=30)
     dur = max(len(y) / sr, 1e-6)
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
@@ -73,7 +73,7 @@ def build_image_match(limit=None, out=None) -> pd.DataFrame:
     feats = []
     n = len(img)
     for i, row in enumerate(img.itertuples(index=False)):
-        arr = np.asarray(Image.open(row.path).convert("L"), dtype=np.uint8)
+        arr = np.asarray(Image.open(D.resolve(row.path)).convert("L"), dtype=np.uint8)
         f = image_match_features(arr)
         f["path"] = row.path
         feats.append(f)
