@@ -31,14 +31,31 @@ Key findings surfaced by the audit (`reports/data_audit.md`):
   correlated with the targets — reported honestly, drives the class-weighting /
   asymmetric-cost choices.
 
-## Setup
+## Quickstart (clone and run the demo)
+
+Trained models + scaler are committed, so you only need deps + the raw dataset:
 
 ```bash
+git clone https://github.com/hemish22/h4h_hackathon.git && cd h4h_hackathon
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+bash scripts/fetch_dataset.sh            # downloads ~476MB dataset from the release
+streamlit run app/streamlit_app.py       # demo works: 4 one-click participants
 ```
 
-Dataset (not committed — ~200MB) goes in `dataset/`:
+On Windows the librosa/torch audio path can hard-crash — use Linux/Colab
+(`notebooks/colab_train.ipynb`) for anything that touches audio.
+
+## What's in the repo vs fetched
+
+| In git | Fetched separately |
+|---|---|
+| all code, configs, notebook | raw `dataset/` → `scripts/fetch_dataset.sh` (release `data-v1`) |
+| manifests, splits, match CSVs | — |
+| trained models (`artifacts/*.pt`), scaler, lgbm | — |
+| results/metrics, figures, demo participants | — |
+
+Dataset layout after fetch:
 
 ```
 dataset/
