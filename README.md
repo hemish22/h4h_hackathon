@@ -46,6 +46,20 @@ streamlit run app/streamlit_app.py       # demo works: 4 one-click participants
 On Windows the librosa/torch audio path can hard-crash — use Linux/Colab
 (`notebooks/colab_train.ipynb`) for anything that touches audio.
 
+## Deploy (Streamlit Community Cloud — free)
+
+The app runs **without** the 476MB dataset: the CSV and the 4 demo participants'
+media are bundled in `demo_assets/` (2MB), and the trained model ships in git.
+
+1. Push to GitHub (done).
+2. Go to https://share.streamlit.io → New app → pick this repo, branch `main`,
+   main file `app/streamlit_app.py`.
+3. Deploy. `packages.txt` (libsndfile/ffmpeg) + `requirements.txt` are picked up
+   automatically.
+
+The 4 one-click demos + manual upload/webcam/mic all work on the deployed app.
+(The full dataset is only needed to retrain or re-run the audit — not to demo.)
+
 ## What's in the repo vs fetched
 
 | In git | Fetched separately |

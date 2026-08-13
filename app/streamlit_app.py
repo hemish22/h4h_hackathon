@@ -824,7 +824,7 @@ if demos:
     cols = st.columns(len(demos))
     for col, (key, d) in zip(cols, demos.items()):
         if col.button(d["tag"], key=f"demo_{key}"):
-            st.session_state["demo"] = d
+            st.session_state["demo"] = dict(d, _key=key)
 
 # ---- manual inputs
 st.subheader("Or build your own assessment")
@@ -859,7 +859,13 @@ go = st.button("Run screening assessment", type="primary")
 if "demo" in st.session_state and (go is False):
     d = st.session_state.pop("demo")
     from src.datasets import load_face, load_logmel
-    face = load_face(d["image_path"]); mel = load_logmel(d["audio_path"])
+    # prefer the small bundled media so the app runs without the full dataset
+    _key = d.get("_key", "")
+    _img_b = os.path.join(C.ROOT, "demo_assets", "media", f"{_key}.png")
+    _wav_b = os.path.join(C.ROOT, "demo_assets", "media", f"{_key}.wav")
+    img_path = _img_b if os.path.exists(_img_b) else D.resolve(d["image_path"])
+    wav_path = _wav_b if os.path.exists(_wav_b) else D.resolve(d["audio_path"])
+    face = load_face(img_path); mel = load_logmel(wav_path)
     tv = scaler.transform(np.array([[d["features"][f] for f in C.FEATURE_COLS]]))[0]
     st.info(f"**{d['tag']}** — participant #{d['participant_id']} "
             f"(true: {d['true_class'].replace('_',' ')})")
@@ -867,10 +873,10 @@ if "demo" in st.session_state and (go is False):
     ic, ac = st.columns([1, 2])
     with ic:
         st.caption("Face input")
-        st.image(D.resolve(d["image_path"]), width=160)
+        st.image(img_path, width=160)
     with ac:
         st.caption("Voice input")
-        with open(D.resolve(d["audio_path"]), "rb") as _f:
+        with open(wav_path, "rb") as _f:
             st.audio(_f.read(), format="audio/wav")
     proba, pstd, reg, rstd, gate, aux = infer(model, face, mel, tv, False, False)
     render(proba, pstd, reg, rstd, gate, aux, [], conflict_hint=d["conflict"],

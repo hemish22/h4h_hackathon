@@ -77,4 +77,8 @@ def list_image_files() -> pd.DataFrame:
 
 
 def load_csv() -> pd.DataFrame:
-    return pd.read_csv(C.CSV_PATH)
+    # prefer the full dataset; fall back to the small bundled copy (for deploys
+    # where the 476MB dataset isn't fetched)
+    path = C.CSV_PATH if os.path.exists(C.CSV_PATH) else \
+        os.path.join(C.ROOT, "demo_assets", "mental_health_multimodal.csv")
+    return pd.read_csv(path)
