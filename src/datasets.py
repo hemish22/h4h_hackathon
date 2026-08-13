@@ -45,11 +45,16 @@ def load_logmel(path, sr=16000, dur=3.0, augment=False):
 
 
 def _augment_wave(y, sr):
-    import librosa
+    """Waveform augmentation — pure NumPy only.
+
+    NOTE: librosa.effects.pitch_shift (numba phase-vocoder) is deliberately NOT
+    used here. It crashes the process natively (no Python traceback) on Windows
+    when hammered in the training loop — an OpenMP/numba instability. Pitch/timbre
+    invariance is instead approximated by SpecAugment frequency masking, which is
+    pure NumPy and robust. Onset invariance via roll, robustness via noise/gain.
+    """
     r = np.random.default_rng()
     y = np.roll(y, int(r.uniform(-0.3, 0.3) * sr))                 # time shift
-    if r.random() < 0.5:
-        y = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=r.uniform(-2, 2))
     snr = r.uniform(15, 30)                                        # additive noise
     y = y + np.random.randn(len(y)) * (y.std() / (10 ** (snr / 20)) + 1e-9)
     y = y * (10 ** (r.uniform(-6, 6) / 20))                        # gain jitter
