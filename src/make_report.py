@@ -156,7 +156,14 @@ def run():
           decision_note(), "",
           concordance_section(), "",
           "![confusion](../figures/confusion_final_matched.png)\n",
-          "![gates](../figures/gate_weights.png)\n"]
+          "![gates](../figures/gate_weights.png)\n",
+          "## Explainability (criterion 7)\n",
+          "SHAP ranks HRV_Index as the top tabular driver — consistent with established "
+          "stress physiology (HRV suppression = autonomic dysregulation) — even though the "
+          "tabular channel's absolute predictive power is low.\n",
+          "![shap](../figures/shap_beeswarm.png)\n",
+          "![gradcam-faces](../figures/gradcam_faces.png)\n",
+          "![gradcam-spec](../figures/gradcam_spectrograms.png)\n"]
     with open(os.path.join(C.REPORTS_DIR, "ablation.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(md))
     print("wrote reports/ablation.md")

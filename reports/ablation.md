@@ -36,3 +36,13 @@ The joint gated model reaches a similar classification accuracy **and** addition
 ![confusion](../figures/confusion_final_matched.png)
 
 ![gates](../figures/gate_weights.png)
+
+## Explainability (criterion 7)
+
+SHAP ranks HRV_Index as the top tabular driver — consistent with established stress physiology (HRV suppression = autonomic dysregulation) — even though the tabular channel's absolute predictive power is low.
+
+![shap](../figures/shap_beeswarm.png)
+
+![gradcam-faces](../figures/gradcam_faces.png)
+
+![gradcam-spec](../figures/gradcam_spectrograms.png)
