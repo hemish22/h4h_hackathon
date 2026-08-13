@@ -617,6 +617,73 @@ def render_gradcam(model, face_np, mel_np):
         cols[1].image(buf.getvalue(), caption="Voice attention (mel, time →)", width=340)
 
 
+@st.cache_data
+def _load_result(run):
+    p = os.path.join(C.RESULTS_DIR, run, "metrics.json")
+    return json.load(open(p)) if os.path.exists(p) else None
+
+
+def render_performance_panel():
+    """#4 — 'About the model': ablation, calibration/ECE, concordance evidence,
+    confusion matrix, effective sample size. All from committed results/figures."""
+    st.markdown('<div class="section-kicker">Evaluated on the held-out test set '
+                '(600 participants)</div>', unsafe_allow_html=True)
+
+    # --- ablation table (built from results/*.json)
+    rows = [("lgbm_tabular", "Tabular only (LightGBM)", "n/a"),
+            ("concat_random", "Gated fusion", "random"),
+            ("concat_matched", "Gated fusion", "matched"),
+            ("final_matched", "Final (+ordinal +moddrop)", "matched")]
+    lines = ["| Model | Pairing | Acc | MacroF1 | ROC-AUC | QWK | Str MAE |",
+             "|---|---|---|---|---|---|---|"]
+    for run, name, pair in rows:
+        d = _load_result(run)
+        if not d:
+            continue
+        c = d["classification"]; r = d["regression"]
+        roc = c.get("roc_auc_ovr_macro")
+        roc = f"{roc:.3f}" if roc else "—"
+        lines.append(f"| {name} | {pair} | {c['accuracy']:.3f} | {c['macro_f1']:.3f} | "
+                     f"{roc} | {c['qwk_EXTRA']:.3f} | {r['Stress']['MAE']:.2f} |")
+    dfz = _load_result("decision_fusion")
+    if dfz:
+        for key, nm in [("decision_uniform", "Decision-level fusion (no pairing)")]:
+            c = dfz.get(key)
+            if c:
+                roc = c.get("roc_auc_ovr_macro"); roc = f"{roc:.3f}" if roc else "—"
+                lines.append(f"| {nm} | none | {c['accuracy']:.3f} | {c['macro_f1']:.3f} | "
+                             f"{roc} | {c['qwk_EXTRA']:.3f} | — |")
+    st.markdown("\n".join(lines))
+    st.caption("Matched pairing beats random by ~10 accuracy points under an identical "
+               "model — isolating the contribution of the feature-matched alignment engine.")
+
+    col1, col2 = st.columns(2)
+    # --- calibration / ECE
+    with col1:
+        cal = _load_result("calibration")
+        fig = os.path.join(C.FIGURES_DIR, "calibration.png")
+        if cal and os.path.exists(fig):
+            st.image(fig, caption=f"Reliability diagram · ECE = {cal['ece']:.3f}")
+    # --- concordance band evidence (clean subset)
+    with col2:
+        conc = _load_result("concordance")
+        if conc and conc.get("clean"):
+            cl = conc["clean"]
+            st.markdown("**Accuracy by concordance band (clean subset)**")
+            band_acc = {b.replace("_", " "): (cl[b]["accuracy"] or 0)
+                        for b in ["report", "caveat", "human_review"]}
+            st.bar_chart(band_acc)
+            st.caption("Accuracy collapses when the modalities disagree → concordance "
+                       "is a real reliability signal, used for human-review routing.")
+
+    # --- confusion matrix
+    cm = os.path.join(C.FIGURES_DIR, "confusion_final_matched.png")
+    if os.path.exists(cm):
+        st.image(cm, caption="Confusion matrix (final model) — watch the Moderate↔Severe cell")
+    st.caption("⚠ Effective sample size: the Severe class has only 19 test participants "
+               "(the CSV is ~3% Severe) — Severe-class metrics are reported with that caveat.")
+
+
 def render(proba, pstd, reg, rstd, gate, aux, dropped, conflict_hint=False,
            source_label="Live assessment", face_np=None, mel_np=None, base_feats=None):
     conc, _ = concordance(aux[0][None], aux[1][None], aux[2][None])
@@ -746,6 +813,9 @@ if model is None:
     st.error("No trained model in artifacts/. Add model_final_matched.pt.")
     st.stop()
 st.caption(f"Ready for assessment · loaded model: `{model_name}`")
+
+with st.expander("📊 About the model — held-out performance & evidence", expanded=False):
+    render_performance_panel()
 
 # ---- demo participants
 if demos:

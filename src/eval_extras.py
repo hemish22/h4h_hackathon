@@ -85,6 +85,37 @@ def concordance_analysis(d):
     return report, conc
 
 
+# ------------------------------------------------------------------ calibration (acc vs confidence + ECE)
+def calibration(d, n_bins=10):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    conf = d["proba"].max(1)
+    correct = (d["proba"].argmax(1) == d["y"]).astype(float)
+    edges = np.linspace(0, 1, n_bins + 1)
+    bins, ece, N = [], 0.0, len(conf)
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        m = (conf >= lo) & (conf < hi) if hi < 1 else (conf >= lo) & (conf <= hi)
+        if m.sum():
+            acc, c, w = float(correct[m].mean()), float(conf[m].mean()), m.sum() / N
+            ece += w * abs(acc - c)
+            bins.append({"lo": float(lo), "hi": float(hi), "acc": acc,
+                         "conf": c, "n": int(m.sum())})
+    E.save_results("calibration", extra={"ece": float(ece), "bins": bins})
+    # figure: accuracy vs confidence
+    xs = [b["conf"] for b in bins]; ys = [b["acc"] for b in bins]
+    plt.figure(figsize=(5, 4.5))
+    plt.plot([0, 1], [0, 1], "--", color="gray", label="perfect calibration")
+    plt.plot(xs, ys, "o-", color="#4C78A8", label="model")
+    plt.xlabel("confidence"); plt.ylabel("accuracy")
+    plt.title(f"Reliability diagram (ECE = {ece:.3f})")
+    plt.legend(); plt.xlim(0, 1); plt.ylim(0, 1); plt.tight_layout()
+    out = os.path.join(C.FIGURES_DIR, "calibration.png")
+    plt.savefig(out, dpi=120); plt.close()
+    print(f"wrote {out}  (ECE={ece:.3f})")
+    return ece
+
+
 # ------------------------------------------------------------------ 4 demo participants
 def pick_demos(d, conc):
     df = d["df"].reset_index(drop=True)
@@ -140,6 +171,7 @@ def run():
     for k in ["all", "clean", "conflict"]:
         print(f"concordance[{k}] mean={rep[k]['mean_concordance']}",
               {b: rep[k][b]["accuracy"] for b in ["report", "caveat", "human_review"]})
+    calibration(d)
     pick_demos(d, conc)
 
 
