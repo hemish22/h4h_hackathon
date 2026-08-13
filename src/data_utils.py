@@ -50,6 +50,8 @@ def list_audio_files() -> pd.DataFrame:
         if not os.path.isdir(actor_dir):
             continue
         for wav in sorted(glob.glob(os.path.join(actor_dir, "*.wav"))):
+            if os.path.basename(wav).startswith("._"):
+                continue                                # macOS AppleDouble sidecar
             meta = parse_filename(wav)
             meta["path"] = rel(wav)
             meta["stress"] = C.AUDIO_EMO_TO_STRESS[meta["emotion"]]
@@ -66,6 +68,8 @@ def list_image_files() -> pd.DataFrame:
         if not os.path.isdir(d):
             continue
         for img in sorted(glob.glob(os.path.join(d, "*"))):
+            if os.path.basename(img).startswith("._"):
+                continue                                # macOS AppleDouble sidecar
             if img.lower().endswith((".jpg", ".jpeg", ".png")):
                 rows.append(dict(path=rel(img), emotion=emo,
                                  stress=C.IMAGE_EMO_TO_STRESS[emo]))
