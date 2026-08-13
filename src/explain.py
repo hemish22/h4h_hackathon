@@ -69,7 +69,7 @@ def report_card(pid, cls_proba, cls_std, reg_mean, reg_std, gate,
         L.append(f"  {lbl:<28} {g*100:.0f}%")
     L.append("")
     if concordance is not None:
-        flag = "⚠ LOW" if concordance < 0.45 else ("moderate" if concordance < 0.75 else "OK")
+        flag = "LOW" if concordance < 0.45 else ("moderate" if concordance < 0.75 else "OK")
         L.append(f"CONCORDANCE     {concordance:.2f}  {flag}")
         if conflict:
             L.append("                Modality disagreement present; note this")

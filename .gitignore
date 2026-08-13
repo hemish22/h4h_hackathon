@@ -23,3 +23,6 @@ venv/
 !figures/.gitkeep
 !results/.gitkeep
 !artifacts/.gitkeep
+
+# build artifacts
+*.zip
