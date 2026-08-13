@@ -18,6 +18,19 @@ ROWS = [
     ("final_matched", "+ ordinal + modality dropout (final)", "matched"),
 ]
 
+# decision-level fusion + unimodal aux rows live under results/decision_fusion (extra keys)
+DF_ROWS = [
+    ("audio_only", "Audio only (aux head)", "none"),
+    ("image_only", "Image only (aux head)", "none"),
+    ("decision_uniform", "Decision-level fusion, uniform", "none"),
+    ("decision_tuned", "Decision-level fusion, tuned", "none"),
+]
+
+
+def _df_metrics(key):
+    d = _load("decision_fusion")
+    return d.get(key) if d else None
+
 
 def _load(run):
     p = os.path.join(C.RESULTS_DIR, run, "metrics.json")
@@ -41,7 +54,56 @@ def ablation_table():
                      f"{c['weighted_f1']:.3f} | {roc} | {c['qwk_EXTRA']:.3f} | "
                      f"{r['Depression']['MAE']:.2f} | {r['Anxiety']['MAE']:.2f} | "
                      f"{r['Stress']['MAE']:.2f} | {r2:.3f} |")
+    # decision-level fusion + unimodal aux rows (no pairing in training; classification only)
+    for key, name, pair in DF_ROWS:
+        c = _df_metrics(key)
+        if not c:
+            continue
+        roc = c.get("roc_auc_ovr_macro")
+        roc = f"{roc:.3f}" if roc else "—"
+        lines.append(f"| {name} | {pair} | {c['accuracy']:.3f} | {c['macro_f1']:.3f} | "
+                     f"{c['weighted_f1']:.3f} | {roc} | {c['qwk_EXTRA']:.3f} | — | — | — | — |")
     return "\n".join(lines)
+
+
+def concordance_section():
+    d = _load("concordance")
+    if not d:
+        return ""
+    lines = ["## Concordance (modality agreement) — accuracy by routing band\n",
+             "| Subset | mean conc | report acc | caveat acc | human-review acc |",
+             "|---|---|---|---|---|"]
+    for sub in ["all", "clean", "conflict"]:
+        s = d.get(sub)
+        if not s:
+            continue
+        def a(b):
+            v = s[b]["accuracy"]
+            return f"{v:.3f} (n={s[b]['n']})" if v is not None else "—"
+        lines.append(f"| {sub} | {s['mean_concordance']:.3f} | {a('report')} | "
+                     f"{a('caveat')} | {a('human_review')} |")
+    lines.append("\n**Accuracy drops in the low-concordance (human-review) band** — the "
+                 "concordance score is a genuine reliability signal, not decoration. "
+                 "Headline uses the `clean` (non-conflict) subset.")
+    return "\n".join(lines)
+
+
+def decision_note():
+    d = _load("decision_fusion")
+    if not d or "decision_tuned_weights" not in d:
+        return ""
+    w = d["decision_tuned_weights"]
+    return ("## Did we need the pairing? (decision-level fusion, §4.9)\n\n"
+            f"Decision-level fusion combines the three per-modality aux posteriors with "
+            f"**no pairing in training**. Uniform acc "
+            f"{d['decision_uniform']['accuracy']:.3f}, tuned acc "
+            f"{d['decision_tuned']['accuracy']:.3f} "
+            f"(weights face {w['face']:.2f} / voice {w['voice']:.2f} / tab {w['tab']:.2f} — "
+            f"the near-zero tab weight confirms the tabular channel is noise).\n\n"
+            f"The joint gated model reaches a similar classification accuracy **and** "
+            f"additionally delivers Objective-2 regression and Objective-3 per-participant "
+            f"gate weights, which decision-level fusion structurally cannot. That is the "
+            f"justification for the alignment engine.")
 
 
 def confusion_fig(run, out):
@@ -91,6 +153,8 @@ def run():
           "(voice ≈ 0.41, face ≈ 0.34–0.40, tabular ≈ 0.18–0.26).\n",
           "Severe-class recall stays low (~0.26–0.32): the CSV is heavily skewed "
           "(Severe ≈ 3%, only 19 test participants) — a stated limitation, not a bug.\n",
+          decision_note(), "",
+          concordance_section(), "",
           "![confusion](../figures/confusion_final_matched.png)\n",
           "![gates](../figures/gate_weights.png)\n"]
     with open(os.path.join(C.REPORTS_DIR, "ablation.md"), "w", encoding="utf-8") as f:

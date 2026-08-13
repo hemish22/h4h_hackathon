@@ -1,0 +1,58 @@
+{
+  "classification": null,
+  "regression": null,
+  "all": {
+    "report": {
+      "fraction": 0.41,
+      "n": 246,
+      "accuracy": 0.6910569105691057
+    },
+    "caveat": {
+      "fraction": 0.5633333333333334,
+      "n": 338,
+      "accuracy": 0.6715976331360947
+    },
+    "human_review": {
+      "fraction": 0.02666666666666667,
+      "n": 16,
+      "accuracy": 0.3125
+    },
+    "mean_concordance": 0.7048193378761021
+  },
+  "clean": {
+    "report": {
+      "fraction": 0.3813387423935091,
+      "n": 188,
+      "accuracy": 0.6382978723404256
+    },
+    "caveat": {
+      "fraction": 0.592292089249493,
+      "n": 292,
+      "accuracy": 0.678082191780822
+    },
+    "human_review": {
+      "fraction": 0.02636916835699797,
+      "n": 13,
+      "accuracy": 0.23076923076923078
+    },
+    "mean_concordance": 0.6953932031367774
+  },
+  "conflict": {
+    "report": {
+      "fraction": 0.5420560747663551,
+      "n": 58,
+      "accuracy": 0.8620689655172413
+    },
+    "caveat": {
+      "fraction": 0.42990654205607476,
+      "n": 46,
+      "accuracy": 0.6304347826086957
+    },
+    "human_review": {
+      "fraction": 0.028037383177570093,
+      "n": 3,
+      "accuracy": 0.6666666666666666
+    },
+    "mean_concordance": 0.7482500334507483
+  }
+}

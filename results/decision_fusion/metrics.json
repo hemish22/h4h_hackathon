@@ -1,0 +1,304 @@
+{
+  "classification": null,
+  "regression": null,
+  "audio_only": {
+    "accuracy": 0.625,
+    "precision_per_class": {
+      "Healthy": 0.6630824372759857,
+      "Mild_Stress": 0.7238095238095238,
+      "Moderate_Stress": 0.6535947712418301,
+      "Severe_Stress": 0.2222222222222222
+    },
+    "recall_per_class": {
+      "Healthy": 0.7551020408163265,
+      "Mild_Stress": 0.41081081081081083,
+      "Moderate_Stress": 0.6622516556291391,
+      "Severe_Stress": 0.7368421052631579
+    },
+    "f1_per_class": {
+      "Healthy": 0.7061068702290076,
+      "Mild_Stress": 0.5241379310344828,
+      "Moderate_Stress": 0.6578947368421053,
+      "Severe_Stress": 0.34146341463414637
+    },
+    "support_per_class": {
+      "Healthy": 245,
+      "Mild_Stress": 185,
+      "Moderate_Stress": 151,
+      "Severe_Stress": 19
+    },
+    "macro_f1": 0.5574007381849355,
+    "weighted_f1": 0.6263193509811548,
+    "confusion_matrix": [
+      [
+        185,
+        15,
+        45,
+        0
+      ],
+      [
+        68,
+        76,
+        8,
+        33
+      ],
+      [
+        23,
+        12,
+        100,
+        16
+      ],
+      [
+        3,
+        2,
+        0,
+        14
+      ]
+    ],
+    "qwk_EXTRA": 0.5173010380622838,
+    "roc_auc_ovr_macro": 0.8086986525846418,
+    "roc_auc_ovr_weighted": 0.7712401365015163,
+    "report": "                 precision    recall  f1-score   support\n\n        Healthy       0.66      0.76      0.71       245\n    Mild_Stress       0.72      0.41      0.52       185\nModerate_Stress       0.65      0.66      0.66       151\n  Severe_Stress       0.22      0.74      0.34        19\n\n       accuracy                           0.62       600\n      macro avg       0.57      0.64      0.56       600\n   weighted avg       0.67      0.62      0.63       600\n"
+  },
+  "image_only": {
+    "accuracy": 0.455,
+    "precision_per_class": {
+      "Healthy": 0.625,
+      "Mild_Stress": 0.4166666666666667,
+      "Moderate_Stress": 0.3450479233226837,
+      "Severe_Stress": 0.3333333333333333
+    },
+    "recall_per_class": {
+      "Healthy": 0.5714285714285714,
+      "Mild_Stress": 0.10810810810810811,
+      "Moderate_Stress": 0.7152317880794702,
+      "Severe_Stress": 0.2631578947368421
+    },
+    "f1_per_class": {
+      "Healthy": 0.5970149253731343,
+      "Mild_Stress": 0.17167381974248927,
+      "Moderate_Stress": 0.46551724137931033,
+      "Severe_Stress": 0.29411764705882354
+    },
+    "support_per_class": {
+      "Healthy": 245,
+      "Mild_Stress": 185,
+      "Moderate_Stress": 151,
+      "Severe_Stress": 19
+    },
+    "macro_f1": 0.3820809083884394,
+    "weighted_f1": 0.4231827535186199,
+    "confusion_matrix": [
+      [
+        140,
+        16,
+        85,
+        4
+      ],
+      [
+        50,
+        20,
+        113,
+        2
+      ],
+      [
+        27,
+        12,
+        108,
+        4
+      ],
+      [
+        7,
+        0,
+        7,
+        5
+      ]
+    ],
+    "qwk_EXTRA": 0.3062768050243766,
+    "roc_auc_ovr_macro": 0.6965388643588377,
+    "roc_auc_ovr_weighted": 0.7073407376216765,
+    "report": "                 precision    recall  f1-score   support\n\n        Healthy       0.62      0.57      0.60       245\n    Mild_Stress       0.42      0.11      0.17       185\nModerate_Stress       0.35      0.72      0.47       151\n  Severe_Stress       0.33      0.26      0.29        19\n\n       accuracy                           0.46       600\n      macro avg       0.43      0.41      0.38       600\n   weighted avg       0.48      0.46      0.42       600\n"
+  },
+  "tabular_aux": {
+    "accuracy": 0.25333333333333335,
+    "precision_per_class": {
+      "Healthy": 0.3669064748201439,
+      "Mild_Stress": 0.3368421052631579,
+      "Moderate_Stress": 0.26171875,
+      "Severe_Stress": 0.01818181818181818
+    },
+    "recall_per_class": {
+      "Healthy": 0.20816326530612245,
+      "Mild_Stress": 0.17297297297297298,
+      "Moderate_Stress": 0.44370860927152317,
+      "Severe_Stress": 0.10526315789473684
+    },
+    "f1_per_class": {
+      "Healthy": 0.265625,
+      "Mild_Stress": 0.22857142857142856,
+      "Moderate_Stress": 0.32923832923832924,
+      "Severe_Stress": 0.031007751937984496
+    },
+    "support_per_class": {
+      "Healthy": 245,
+      "Mild_Stress": 185,
+      "Moderate_Stress": 151,
+      "Severe_Stress": 19
+    },
+    "macro_f1": 0.2136106274369356,
+    "weighted_f1": 0.2627799571458729,
+    "confusion_matrix": [
+      [
+        51,
+        35,
+        110,
+        49
+      ],
+      [
+        52,
+        32,
+        72,
+        29
+      ],
+      [
+        29,
+        25,
+        67,
+        30
+      ],
+      [
+        7,
+        3,
+        7,
+        2
+      ]
+    ],
+    "qwk_EXTRA": -0.028537223947130208,
+    "roc_auc_ovr_macro": 0.476650227539599,
+    "roc_auc_ovr_weighted": 0.49346445168628067,
+    "report": "                 precision    recall  f1-score   support\n\n        Healthy       0.37      0.21      0.27       245\n    Mild_Stress       0.34      0.17      0.23       185\nModerate_Stress       0.26      0.44      0.33       151\n  Severe_Stress       0.02      0.11      0.03        19\n\n       accuracy                           0.25       600\n      macro avg       0.25      0.23      0.21       600\n   weighted avg       0.32      0.25      0.26       600\n"
+  },
+  "decision_uniform": {
+    "accuracy": 0.6516666666666666,
+    "precision_per_class": {
+      "Healthy": 0.6748251748251748,
+      "Mild_Stress": 0.8072289156626506,
+      "Moderate_Stress": 0.6417112299465241,
+      "Severe_Stress": 0.25
+    },
+    "recall_per_class": {
+      "Healthy": 0.7877551020408163,
+      "Mild_Stress": 0.3621621621621622,
+      "Moderate_Stress": 0.7947019867549668,
+      "Severe_Stress": 0.5789473684210527
+    },
+    "f1_per_class": {
+      "Healthy": 0.7269303201506592,
+      "Mild_Stress": 0.5,
+      "Moderate_Stress": 0.7100591715976331,
+      "Severe_Stress": 0.3492063492063492
+    },
+    "support_per_class": {
+      "Healthy": 245,
+      "Mild_Stress": 185,
+      "Moderate_Stress": 151,
+      "Severe_Stress": 19
+    },
+    "macro_f1": 0.5715489602386604,
+    "weighted_f1": 0.6407529733051246,
+    "confusion_matrix": [
+      [
+        193,
+        10,
+        41,
+        1
+      ],
+      [
+        70,
+        67,
+        25,
+        23
+      ],
+      [
+        17,
+        5,
+        120,
+        9
+      ],
+      [
+        6,
+        1,
+        1,
+        11
+      ]
+    ],
+    "qwk_EXTRA": 0.543320503807152,
+    "roc_auc_ovr_macro": 0.8335670664045292,
+    "roc_auc_ovr_weighted": 0.8184961288018628,
+    "report": "                 precision    recall  f1-score   support\n\n        Healthy       0.67      0.79      0.73       245\n    Mild_Stress       0.81      0.36      0.50       185\nModerate_Stress       0.64      0.79      0.71       151\n  Severe_Stress       0.25      0.58      0.35        19\n\n       accuracy                           0.65       600\n      macro avg       0.59      0.63      0.57       600\n   weighted avg       0.69      0.65      0.64       600\n"
+  },
+  "decision_tuned": {
+    "accuracy": 0.6583333333333333,
+    "precision_per_class": {
+      "Healthy": 0.6783216783216783,
+      "Mild_Stress": 0.813953488372093,
+      "Moderate_Stress": 0.6593406593406593,
+      "Severe_Stress": 0.2391304347826087
+    },
+    "recall_per_class": {
+      "Healthy": 0.7918367346938775,
+      "Mild_Stress": 0.3783783783783784,
+      "Moderate_Stress": 0.7947019867549668,
+      "Severe_Stress": 0.5789473684210527
+    },
+    "f1_per_class": {
+      "Healthy": 0.7306967984934086,
+      "Mild_Stress": 0.5166051660516605,
+      "Moderate_Stress": 0.7207207207207207,
+      "Severe_Stress": 0.3384615384615385
+    },
+    "support_per_class": {
+      "Healthy": 245,
+      "Mild_Stress": 185,
+      "Moderate_Stress": 151,
+      "Severe_Stress": 19
+    },
+    "macro_f1": 0.5766210559318321,
+    "weighted_f1": 0.6497537823500672,
+    "confusion_matrix": [
+      [
+        194,
+        11,
+        40,
+        0
+      ],
+      [
+        68,
+        70,
+        21,
+        26
+      ],
+      [
+        18,
+        4,
+        120,
+        9
+      ],
+      [
+        6,
+        1,
+        1,
+        11
+      ]
+    ],
+    "qwk_EXTRA": 0.5471402082441876,
+    "roc_auc_ovr_macro": 0.8416211864466393,
+    "roc_auc_ovr_weighted": 0.8184980854078237,
+    "report": "                 precision    recall  f1-score   support\n\n        Healthy       0.68      0.79      0.73       245\n    Mild_Stress       0.81      0.38      0.52       185\nModerate_Stress       0.66      0.79      0.72       151\n  Severe_Stress       0.24      0.58      0.34        19\n\n       accuracy                           0.66       600\n      macro avg       0.60      0.64      0.58       600\n   weighted avg       0.70      0.66      0.65       600\n"
+  },
+  "decision_tuned_weights": {
+    "face": 0.45,
+    "voice": 0.5,
+    "tab": 0.050000000000000044
+  }
+}
