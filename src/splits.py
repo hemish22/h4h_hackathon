@@ -24,7 +24,7 @@ AUDIO_TEST_ACTORS = [22, 23, 24]
 
 def _write(name: str, items) -> None:
     path = os.path.join(C.SPLITS_DIR, f"{name}.txt")
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(str(x) for x in items))
     print(f"  {name}: {len(items)}")
 

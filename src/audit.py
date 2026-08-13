@@ -124,7 +124,7 @@ def run() -> str:
 
     out = "\n".join(lines)
     path = os.path.join(C.REPORTS_DIR, "data_audit.md")
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(out)
     print(f"wrote {path}")
     if warn:
