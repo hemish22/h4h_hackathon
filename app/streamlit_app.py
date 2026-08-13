@@ -664,8 +664,21 @@ if demos:
 st.subheader("Or build your own assessment")
 st.caption("Add any available inputs. Missing modalities are handled explicitly in the result.")
 c1, c2 = st.columns(2)
-up_img = c1.file_uploader("Face image", type=["png", "jpg", "jpeg"])
-up_wav = c2.file_uploader("Speech .wav", type=["wav"])
+with c1:
+    face_mode = st.radio("Face input", ["Upload", "Webcam"], horizontal=True, key="face_mode")
+    if face_mode == "Webcam":
+        up_img = st.camera_input("Take a photo")
+    else:
+        up_img = st.file_uploader("Face image", type=["png", "jpg", "jpeg"])
+with c2:
+    voice_mode = st.radio("Voice input", ["Upload", "Record"], horizontal=True, key="voice_mode")
+    if voice_mode == "Record":
+        up_wav = st.audio_input("Record speech")
+    else:
+        up_wav = st.file_uploader("Speech .wav", type=["wav"])
+st.caption("⚠ Live webcam/mic inputs are out-of-distribution (model trained on "
+           "registered 48×48 faces + acted studio speech) — treat live results as "
+           "illustrative. The demo participants above are the reliable story.")
 with st.expander("Behavioural and physiological features", expanded=False):
     st.caption("These controls also work as a simple what-if exploration tool. Adjust them and run Predict again.")
     tcols = st.columns(3)
