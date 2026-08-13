@@ -529,8 +529,96 @@ def infer(model, face_arr, mel_arr, tab_vec, drop_face, drop_voice, T=25):
             o.gate.numpy()[0], aux)
 
 
+@st.cache_data
+def _csv_cached():
+    return D.load_csv()
+
+
+def render_probabilities(proba):
+    """#3 — full 4-class ordinal probability bar (not just the top label)."""
+    st.markdown('<div class="section-kicker">Class probabilities (ordered scale)</div>',
+                unsafe_allow_html=True)
+    top = int(proba.argmax())
+    for i, cls in enumerate(C.STRESS_CLASSES):
+        pct = float(proba[i]) * 100
+        color = PALETTE["yellow"] if i == top else PALETTE["slate"]
+        st.markdown(
+            f"""<div class="prob-row">
+                  <div class="prob-label"><span>{pretty_class(cls)}</span><span>{pct:.0f}%</span></div>
+                  <div class="bar-track"><div class="bar-fill" style="width:{pct:.0f}%;background:{color};"></div></div>
+                </div>""",
+            unsafe_allow_html=True,
+        )
+
+
+def _predict_stress_fn(model, scaler, face_t, mel_t):
+    """dict[feature]->value  ->  predicted Stress score (original units)."""
+    import torch
+    def f(feats):
+        x = scaler.transform(np.array([[feats[c] for c in C.FEATURE_COLS]])).astype(np.float32)
+        with torch.no_grad():
+            o = model(face_t, mel_t, torch.from_numpy(x))
+        return float(o.reg[0, 2]) * C.REG_MAXIMA[2]
+    return f
+
+
+def render_counterfactuals(model, scaler, face_np, mel_np, base_feats):
+    """#1 — what would change this: sweep actionable features, show top movers."""
+    import torch
+    from src.explain import top_counterfactuals
+    face_t = torch.zeros(1, 48, 48) if face_np is None else torch.from_numpy(face_np).unsqueeze(0)
+    mel_t = torch.zeros(1, 128, 188) if mel_np is None else torch.from_numpy(mel_np).unsqueeze(0)
+    fn = _predict_stress_fn(model, scaler, face_t, mel_t)
+    try:
+        cfs = top_counterfactuals(fn, base_feats, _csv_cached(), k=3)
+    except Exception as e:
+        st.caption(f"Counterfactuals unavailable: {e}")
+        return
+    st.markdown('<div class="section-kicker">What would change this (actionable)</div>',
+                unsafe_allow_html=True)
+    rows = "".join(
+        f"<li><strong>{feat.replace('_',' ')}</strong> → {val:.0f}"
+        f" &nbsp; predicted stress <strong>{d:+.1f}</strong></li>"
+        for feat, val, d in cfs)
+    st.markdown(f'<ul class="reason-list">{rows}</ul>', unsafe_allow_html=True)
+    st.caption("Estimated effect of moving one behavioural feature, holding face & voice fixed.")
+
+
+def render_gradcam(model, face_np, mel_np):
+    """#2 — live Grad-CAM overlay on THIS participant's face + spectrogram."""
+    if face_np is None and mel_np is None:
+        return
+    import io, torch
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from scipy.ndimage import zoom
+    from src.run_explain import _gradcam, _last_conv
+    face_t = torch.zeros(1, 48, 48) if face_np is None else torch.from_numpy(face_np).unsqueeze(0)
+    mel_t = torch.zeros(1, 128, 188) if mel_np is None else torch.from_numpy(mel_np).unsqueeze(0)
+    tab_t = torch.zeros(1, 18)
+    batch = {"face": face_t, "voice": mel_t, "tab": tab_t}
+    st.markdown('<div class="section-kicker">Where the model looked (Grad-CAM)</div>',
+                unsafe_allow_html=True)
+    cols = st.columns(2)
+    if face_np is not None:
+        cam, _ = _gradcam(model, batch, "face", _last_conv(model.face))
+        cam = zoom(cam, (48 / cam.shape[0], 48 / cam.shape[1]), order=1)
+        fig, ax = plt.subplots(figsize=(3, 3)); ax.imshow(face_np, cmap="gray")
+        ax.imshow(cam, cmap="jet", alpha=0.45); ax.axis("off")
+        buf = io.BytesIO(); fig.savefig(buf, format="png", dpi=110, bbox_inches="tight"); plt.close(fig)
+        cols[0].image(buf.getvalue(), caption="Face attention", width=220)
+    if mel_np is not None:
+        cam, _ = _gradcam(model, batch, "voice", _last_conv(model.voice))
+        cam = zoom(cam, (mel_np.shape[0] / cam.shape[0], mel_np.shape[1] / cam.shape[1]), order=1)
+        fig, ax = plt.subplots(figsize=(4, 2.2)); ax.imshow(mel_np, origin="lower", aspect="auto", cmap="magma")
+        ax.imshow(cam, origin="lower", aspect="auto", cmap="jet", alpha=0.4); ax.axis("off")
+        buf = io.BytesIO(); fig.savefig(buf, format="png", dpi=110, bbox_inches="tight"); plt.close(fig)
+        cols[1].image(buf.getvalue(), caption="Voice attention (mel, time →)", width=340)
+
+
 def render(proba, pstd, reg, rstd, gate, aux, dropped, conflict_hint=False,
-           source_label="Live assessment"):
+           source_label="Live assessment", face_np=None, mel_np=None, base_feats=None):
     conc, _ = concordance(aux[0][None], aux[1][None], aux[2][None])
     conc = float(conc[0]); verdict = route(conc)
     ci = int(proba.argmax())
@@ -551,10 +639,18 @@ def render(proba, pstd, reg, rstd, gate, aux, dropped, conflict_hint=False,
     if dropped:
         st.warning(f"Graceful degradation: {', '.join(dropped)} missing. The missing embedding was zeroed.")
 
+    render_probabilities(proba)
+    st.markdown("<br>", unsafe_allow_html=True)
     render_severity(reg, rstd)
     st.markdown("<br>", unsafe_allow_html=True)
     render_modality_comparison(aux, gate)
     st.markdown("<br>", unsafe_allow_html=True)
+    if face_np is not None or mel_np is not None:
+        render_gradcam(model, face_np, mel_np)
+        st.markdown("<br>", unsafe_allow_html=True)
+    if base_feats is not None:
+        render_counterfactuals(model, scaler, face_np, mel_np, base_feats)
+        st.markdown("<br>", unsafe_allow_html=True)
     render_why_result(proba, gate, aux, conc, verdict, conflict_hint)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -708,7 +804,8 @@ if "demo" in st.session_state and (go is False):
             st.audio(_f.read(), format="audio/wav")
     proba, pstd, reg, rstd, gate, aux = infer(model, face, mel, tv, False, False)
     render(proba, pstd, reg, rstd, gate, aux, [], conflict_hint=d["conflict"],
-           source_label=f"Demo · {d['tag']}")
+           source_label=f"Demo · {d['tag']}",
+           face_np=face, mel_np=mel, base_feats=dict(d["features"]))
 
 # ---- manual path
 elif go:
@@ -727,7 +824,8 @@ elif go:
     tv = scaler.transform(np.array([[tab_vals[f] for f in C.FEATURE_COLS]]))[0]
     dropped = [m for m, dd in [("face", drop_face), ("voice", drop_voice)] if dd]
     proba, pstd, reg, rstd, gate, aux = infer(model, face, mel, tv, drop_face, drop_voice)
-    render(proba, pstd, reg, rstd, gate, aux, dropped, source_label="Manual assessment")
+    render(proba, pstd, reg, rstd, gate, aux, dropped, source_label="Manual assessment",
+           face_np=face, mel_np=mel, base_feats=dict(tab_vals))
 
 st.divider()
 st.caption("Synthetic multimodal pairing · acted emotions · not clinically validated · decision support only.")
